@@ -8,6 +8,9 @@ public class FaceManager {
     private final HashMap<String, Face> faceMap = new HashMap<>();
 
     public void addFace(Face face) {
+        if (face == null || face.getId() == null || face.getId().isEmpty()) {
+            throw new IllegalArgumentException("Face or its ID cannot be null or empty");
+        }
         faces.add(face);
         faceMap.put(face.getId(), face);
     }
@@ -17,10 +20,13 @@ public class FaceManager {
     }
 
     public List<Face> getAllFaces() {
-        return new ArrayList<>(faces);
+        return Collections.unmodifiableList(new ArrayList<>(faces)); // Return unmodifiable list
     }
 
     public Face getFaceById(String id) {
+        if (id == null || id.isEmpty()) {
+            throw new IllegalArgumentException("ID cannot be null or empty");
+        }
         return faceMap.get(id);
     }
 
