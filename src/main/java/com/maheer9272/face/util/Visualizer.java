@@ -9,6 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import java.io.IOException;
 import java.util.List;
 
 public class Visualizer extends Application {
@@ -19,8 +20,8 @@ public class Visualizer extends Application {
     public void start(Stage primaryStage) {
         imageProcessor = new ImageProcessor();
         try {
-            imageProcessor.loadImages("src/main/resources/images"); // Use direct path for development
-        } catch (IllegalArgumentException e) {
+            imageProcessor.loadImages("/images");
+        } catch (IOException e) {
             System.err.println("Failed to load images: " + e.getMessage());
             return; // Exit early if image loading fails
         }
@@ -37,7 +38,8 @@ public class Visualizer extends Application {
             if (!images.isEmpty()) {
                 Image currentImage = images.get(currentImageIndex);
                 try {
-                    imageView.setImage(new javafx.scene.image.Image("file:" + currentImage.getPath()));
+                    // Use classpath resource path for image loading
+                    imageView.setImage(new javafx.scene.image.Image(getClass().getResource(currentImage.getPath()).toString()));
                     statusLabel.setText("Loaded: " + currentImage.getFaceId());
                     currentImageIndex = (currentImageIndex + 1) % images.size(); // Cycle through images
                 } catch (Exception ex) {
