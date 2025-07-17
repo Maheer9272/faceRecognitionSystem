@@ -9,6 +9,8 @@ import com.maheer9272.face.util.FaceDetector;
 import com.maheer9272.face.util.DatabaseManager;
 import com.maheer9272.face.util.Visualizer;
 import javafx.application.Application;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -18,27 +20,31 @@ import java.util.List;
 import java.util.Map;
 
 public class Main {
+    private static final Logger logger = LoggerFactory.getLogger(Main.class);
+
     public static void main(String[] args) {
         // Initialize FaceManager
         FaceManager manager = new FaceManager();
         try {
             manager.addFace(new Face("f1", "BOB", new double[]{1.0, 2.0}));
             manager.addFace(new Face("f2", "Alice", new double[]{3.0, 4.0}));
-            System.out.println("Faces:");
+            logger.info("Faces:");
             manager.displayFaces();
         } catch (IllegalArgumentException e) {
-            System.err.println("Failed to add faces: " + e.getMessage());
+            logger.error("Failed to add faces: {}", e.getMessage());
             return;
         }
 
         // Initialize ImageProcessor
         ImageProcessor processor = new ImageProcessor();
+        List<Image> images;
         try {
             processor.loadImages("/images");
-            System.out.println("\nImages:");
+            images = processor.getImages();
+            logger.info("Images:");
             processor.displayImages();
         } catch (IOException e) {
-            System.err.println("Failed to load images: " + e.getMessage());
+            logger.error("Failed to load images: {}", e.getMessage());
             return;
         }
 
@@ -46,31 +52,33 @@ public class Main {
         FaceDetector detector = new FaceDetector();
         Map<String, List<BoundingBox>> faceBounds = new HashMap<>();
         try {
-            System.out.println("\nDetecting faces:");
-            for (Image image : processor.getImages()) {
+            logger.info("Detecting faces:");
+            for (Image image : images) {
                 List<BoundingBox> bounds = detector.detectFaces(image);
                 faceBounds.put(image.getFaceId(), bounds);
             }
         } catch (Exception e) {
-            System.err.println("Failed to detect faces: " + e.getMessage());
+            logger.error("Failed to detect faces: {}", e.getMessage());
             return;
         }
 
         // Initialize DatabaseManager
         DatabaseManager dbManager = new DatabaseManager();
         try {
-            System.out.println("\nUsers in database:");
+            logger.info("Users in database:");
             dbManager.displayUsers();
         } catch (SQLException e) {
-            System.err.println("Failed to access database: " + e.getMessage());
+            logger.error("Failed to access database: {}", e.getMessage());
             return;
         }
 
         // Launch JavaFX frontend
         try {
+            Visualizer visualizer = new Visualizer();
+            visualizer.setImages(images, faceBounds);
             Application.launch(Visualizer.class, args);
         } catch (Exception e) {
-            System.err.println("Failed to launch JavaFX application: " + e.getMessage());
+            logger.error("Failed to launch JavaFX application: {}", e.getMessage());
         }
     }
 }

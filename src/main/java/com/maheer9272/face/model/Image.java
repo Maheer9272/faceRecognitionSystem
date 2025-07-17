@@ -1,5 +1,7 @@
 package com.maheer9272.face.model;
 
+import com.clarifai.channel.ClarifaiChannel;
+import io.grpc.Channel;
 public class Image {
     private final String path;
     private final String faceId;

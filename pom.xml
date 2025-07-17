@@ -16,11 +16,23 @@
     </properties>
 
     <dependencies>
-        <!-- Clarifai gRPC -->
+        <!-- https://mvnrepository.com/artifact/com.clarifai/clarifai-api-java -->
+        <dependency>
+            <groupId>com.clarifai</groupId>
+            <artifactId>clarifai-api-java</artifactId>
+            <version>1.1.0</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.clarifai.clarifai-api2/core -->
+        <dependency>
+            <groupId>com.clarifai.clarifai-api2</groupId>
+            <artifactId>core</artifactId>
+            <version>2.7.0</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.clarifai/clarifai-grpc -->
         <dependency>
             <groupId>com.clarifai</groupId>
             <artifactId>clarifai-grpc</artifactId>
-            <version>10.5.2</version>
+            <version>10.3.3</version>
         </dependency>
         <!-- gRPC Netty -->
         <dependency>
