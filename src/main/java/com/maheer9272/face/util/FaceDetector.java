@@ -3,11 +3,11 @@ package com.maheer9272.face.util;
 import com.clarifai.channel.ClarifaiChannel;
 import com.clarifai.credentials.ClarifaiCallCredentials;
 import com.clarifai.grpc.api.*;
+import com.google.protobuf.ByteString;
+import com.maheer9272.face.model.Image;
 import io.github.cdimascio.dotenv.Dotenv;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import com.google.protobuf.ByteString;
-import com.maheer9272.face.model.Image;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,10 +28,7 @@ public class FaceDetector {
         if (image == null || image.getPath() == null || image.getFaceId() == null) {
             throw new IllegalArgumentException("Image and its properties cannot be null");
         }
-        if (!Files.exists(Paths.get(image.getPath()))) {
-            throw new IllegalArgumentException("Image file does not exist: " + image.getPath());
-        }
-        byte[] imageData = Files.readAllBytes(Paths.get(image.getPath()));
+        byte[] imageData = Files.readAllBytes(Paths.get(getClass().getResource(image.getPath()).toURI()));
         MultiOutputResponse response = client.postModelOutputs(
                 PostModelOutputsRequest.newBuilder()
                         .setModelId("face-detection")
@@ -48,6 +45,6 @@ public class FaceDetector {
                         ", Right=" + box.getRightCol());
             }
         }
-        return boundingBoxes; // Return for use in Visualizer or Eigenfaces
+        return boundingBoxes;
     }
 }
