@@ -21,7 +21,12 @@ public class ImageProcessor {
         if (resourceUrl == null) {
             throw new IllegalArgumentException("Resource path not found: " + resourcePath);
         }
-        Path folder = Paths.get(resourceUrl.getPath());
+        Path folder;
+        try {
+            folder = Paths.get(resourceUrl.toURI());
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid resource path: " + resourcePath, e);
+        }
         if (!Files.exists(folder) || !Files.isDirectory(folder)) {
             throw new IllegalArgumentException("Invalid resource path: " + resourcePath);
         }
