@@ -1,7 +1,7 @@
 package com.maheer9272.face.util;
 
 import com.maheer9272.face.model.User;
-
+import io.github.cdimascio.dotenv.Dotenv;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -12,8 +12,13 @@ import java.util.List;
 
 public class DatabaseManager {
     private static final String URL = "jdbc:mysql://localhost:3306/FaceDB";
-    private static final String USER = "root"; // Replace with your MySQL username
-    private static final String PASSWORD = "Maheer@@9272"; // Replace with your MySQL password
+    private static final String USER;
+    private static final String PASSWORD;
+    static {
+        Dotenv dotenv = Dotenv.load();
+        USER = dotenv.get("DB_USER", "root"); // Fallback to "root"
+        PASSWORD = dotenv.get("DB_PASSWORD", "Maheer@@9272"); // Fallback to your password
+    }
 
     public Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL, USER, PASSWORD);
