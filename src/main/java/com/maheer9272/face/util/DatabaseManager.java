@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DatabaseManager {
-    private static final String URL = "jdbc:mysql://localhost:3306/FaceDB";
+    private static final String URL = "jdbc:mysql://localhost:3306/face_recognition";
     private static final String USER;
     private static final String PASSWORD;
     static {
