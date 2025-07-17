@@ -1,10 +1,16 @@
 package com.maheer9272.face.model;
 
 public class Image {
-    private String path;
-    private String faceId;
+    private final String path;
+    private final String faceId;
 
     public Image(String path, String faceId) {
+        if (path == null || path.isEmpty()) {
+            throw new IllegalArgumentException("Path cannot be null or empty");
+        }
+        if (faceId == null || faceId.isEmpty()) {
+            throw new IllegalArgumentException("FaceId cannot be null or empty");
+        }
         this.path = path;
         this.faceId = faceId;
     }
