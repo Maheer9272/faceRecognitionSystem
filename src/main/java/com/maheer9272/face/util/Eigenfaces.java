@@ -1,33 +1,25 @@
 package com.maheer9272.face.util;
 
-import com.maheer9272.face.model.Face;
-import org.apache.commons.math3.linear.ArrayRealVector;
-
-import java.util.List;
+import org.apache.commons.math3.linear.Array2DRowRealMatrix;
+import org.apache.commons.math3.linear.SingularValueDecomposition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Eigenfaces {
+    private static final Logger logger = LoggerFactory.getLogger(Eigenfaces.class);
 
-    public double calculateDistance(Face face1, Face face2) {
-        if (face1 == null || face2 == null) {
-            throw new IllegalArgumentException("Face objects cannot be null");
+    public void computePCA(double[][] imageData) {
+        if (imageData == null || imageData.length == 0) {
+            logger.warn("No image data provided for PCA computation");
+            return;
         }
-        if (face1.getFeatures() == null || face2.getFeatures() == null) {
-            throw new IllegalArgumentException("Feature vectors cannot be null");
+        try {
+            Array2DRowRealMatrix matrix = new Array2DRowRealMatrix(imageData);
+            SingularValueDecomposition svd = new SingularValueDecomposition(matrix);
+            logger.info("PCA computed: {} singular values", svd.getSingularValues().length);
+            // Placeholder: Implement PCA logic for face recognition
+        } catch (Exception e) {
+            logger.error("Failed to compute PCA: {}", e.getMessage(), e);
         }
-        if (face1.getFeatures().length != face2.getFeatures().length) {
-            throw new IllegalArgumentException("Feature vectors must have equal length");
-        }
-        ArrayRealVector v1 = new ArrayRealVector(face1.getFeatures());
-        ArrayRealVector v2 = new ArrayRealVector(face2.getFeatures());
-        return v1.getDistance(v2);// Calculate Euclidean distance between two feature vectors
-    }
-
-    public void computePCA(List<Face> faces) {
-        if (faces == null || faces.isEmpty()) {
-            throw new IllegalArgumentException("Face list cannot be null or empty");
-        }
-        // Placeholder for PCA computation using Apache Commons Math (RealMatrix for covariance, eigenvalue decomposition)
-        // This is where you would implement the PCA logic, such as calculating the covariance matrix,
-        System.out.println("Computing PCA for " + faces.size() + " faces...");
     }
 }

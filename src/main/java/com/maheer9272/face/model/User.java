@@ -6,21 +6,11 @@ public class User {
     private final String faceId;
 
     public User(int id, String username, String faceId) {
-        if (id < 0) {
-            throw new IllegalArgumentException("ID cannot be negative");
-        }
-        if (username == null || username.isEmpty()) {
-            throw new IllegalArgumentException("Username cannot be null or empty");
-        }
-        if (faceId == null || faceId.isEmpty()) {
-            throw new IllegalArgumentException("FaceId cannot be null or empty");
-        }
         this.id = id;
         this.username = username;
         this.faceId = faceId;
     }
 
-    // Getters
     public int getId() {
         return id;
     }

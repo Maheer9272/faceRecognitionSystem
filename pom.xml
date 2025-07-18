@@ -5,46 +5,23 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.maheer9272</groupId>
-    <artifactId>facerecognitionsystem</artifactId>
+    <artifactId>faceRecognitionSystem</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
+        <maven.compiler.source>23</maven.compiler.source>
+        <maven.compiler.target>23</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <javafx.version>21</javafx.version>
+        <javafx.version>25-ea+24</javafx.version>
+        <aws.sdk.version>2.32.2</aws.sdk.version>
     </properties>
 
     <dependencies>
-        <!-- https://mvnrepository.com/artifact/com.clarifai/clarifai-api-java -->
+        <!-- AWS SDK for Rekognition -->
         <dependency>
-            <groupId>com.clarifai</groupId>
-            <artifactId>clarifai-api-java</artifactId>
-            <version>1.1.0</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/com.clarifai.clarifai-api2/core -->
-        <dependency>
-            <groupId>com.clarifai.clarifai-api2</groupId>
-            <artifactId>core</artifactId>
-            <version>2.7.0</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/com.clarifai/clarifai-grpc -->
-        <dependency>
-            <groupId>com.clarifai</groupId>
-            <artifactId>clarifai-grpc</artifactId>
-            <version>10.3.3</version>
-        </dependency>
-        <!-- gRPC Netty -->
-        <dependency>
-            <groupId>io.grpc</groupId>
-            <artifactId>grpc-netty</artifactId>
-            <version>1.62.2</version>
-        </dependency>
-        <!-- Dotenv -->
-        <dependency>
-            <groupId>io.github.cdimascio</groupId>
-            <artifactId>dotenv-java</artifactId>
-            <version>3.2.0</version>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>rekognition</artifactId>
+            <version>${aws.sdk.version}</version>
         </dependency>
         <!-- JavaFX -->
         <dependency>
@@ -62,17 +39,17 @@
             <artifactId>javafx-fxml</artifactId>
             <version>${javafx.version}</version>
         </dependency>
-        <!-- Apache Commons Math -->
+        <!-- MySQL Connector -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>9.3.0</version>
+        </dependency>
+        <!-- Apache Commons Math for Eigenfaces -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-math3</artifactId>
             <version>3.6.1</version>
-        </dependency>
-        <!-- MySQL Connector -->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.33</version>
         </dependency>
         <!-- SLF4J and Logback -->
         <dependency>
@@ -83,13 +60,12 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.4.11</version>
+            <version>1.5.18</version>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
-            <!-- Maven Compiler Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -99,13 +75,15 @@
                     <target>${maven.compiler.target}</target>
                 </configuration>
             </plugin>
-            <!-- JavaFX Maven Plugin -->
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
-                    <mainClass>com.maheer9272.face.util.Visualizer</mainClass>
+                    <mainClass>com.maheer9272.face.util.Main</mainClass>
+                    <options>
+                        <option>--no-warn-unnamed</option>
+                    </options>
                 </configuration>
             </plugin>
         </plugins>

@@ -1,52 +1,23 @@
 package com.maheer9272.face.util;
 
 import com.maheer9272.face.model.Image;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class ImageProcessor {
-    private final List<Image> images = new ArrayList<>();
-
-    public void loadImages(String resourcePath) throws IOException {
-        if (resourcePath == null || resourcePath.isEmpty()) {
-            throw new IllegalArgumentException("Resource path cannot be null or empty");
-        }
-        URL resourceUrl = getClass().getResource(resourcePath);
-        if (resourceUrl == null) {
-            throw new IllegalArgumentException("Resource path not found: " + resourcePath);
-        }
-        Path folder;
-        try {
-            folder = Paths.get(resourceUrl.toURI());
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Invalid resource path: " + resourcePath, e);
-        }
-        if (!Files.exists(folder) || !Files.isDirectory(folder)) {
-            throw new IllegalArgumentException("Invalid resource path: " + resourcePath);
-        }
-        try (var stream = Files.newDirectoryStream(folder, "*.{jpg,JPG}")) {
-            for (Path file : stream) {
-                String fileName = file.getFileName().toString();
-                images.add(new Image("/images/" + fileName, "f" + fileName));
-            }
-        } catch (IOException e) {
-            throw new IOException("Unable to access resource path: " + resourcePath, e);
-        }
-    }
+    private static final Logger logger = LoggerFactory.getLogger(ImageProcessor.class);
 
     public List<Image> getImages() {
-        return Collections.unmodifiableList(images);
-    }
-
-    public void displayImages() {
-        for (Image image : images) {
-            System.out.println(image);
-        }
+        List<Image> images = new ArrayList<>();
+        images.add(new Image("/images/image1.jpg", "fimage1.jpg"));
+        images.add(new Image("/images/image2.jpg", "fimage2.jpg"));
+        images.add(new Image("/images/image3.jpg", "fimage3.jpg"));
+        images.add(new Image("/images/image4.jpg", "fimage4.jpg"));
+        images.add(new Image("/images/image5.jpg", "fimage5.jpg"));
+        logger.info("Retrieved {} images", images.size());
+        return images;
     }
 }

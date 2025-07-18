@@ -1,87 +1,95 @@
 package com.maheer9272.face.util;
 
-import com.clarifai.grpc.api.BoundingBox;
-import com.maheer9272.face.model.Image;
 import javafx.application.Application;
-import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import software.amazon.awssdk.services.rekognition.model.FaceDetail;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 public class Visualizer extends Application {
     private static final Logger logger = LoggerFactory.getLogger(Visualizer.class);
-    private List<Image> images = new ArrayList<>();
-    private Map<String, List<BoundingBox>> faceBounds;
-    private int currentIndex = 0;
-    private ImageView imageView;
+    private static Map<String, List<FaceDetail>> faceBounds = Collections.emptyMap();
+    private static Map<String, String> faceIdToPath = Collections.emptyMap();
 
-    public void setImages(List<Image> images, Map<String, List<BoundingBox>> faceBounds) {
-        this.images = images != null ? images : new ArrayList<>();
-        this.faceBounds = faceBounds;
+    public Visualizer() {
+        // No-argument constructor for JavaFX
+    }
+
+    public static void setFaceBounds(Map<String, List<FaceDetail>> bounds, Map<String, String> idToPath) {
+        faceBounds = bounds != null ? bounds : Collections.emptyMap();
+        faceIdToPath = idToPath != null ? idToPath : Collections.emptyMap();
     }
 
     @Override
     public void start(Stage primaryStage) {
-        imageView = new ImageView();
-        imageView.setFitWidth(400);
-        imageView.setFitHeight(400);
-        imageView.setPreserveRatio(true);
+        Pane root = new Pane();
+        int xOffset = 0;
 
-        Button nextButton = new Button("Load Next Image");
-        nextButton.setOnAction(e -> loadNextImage());
+        for (Map.Entry<String, List<FaceDetail>> entry : faceBounds.entrySet()) {
+            String faceId = entry.getKey();
+            List<FaceDetail> bounds = entry.getValue();
+            String path = faceIdToPath.getOrDefault(faceId, "");
 
-        VBox root = new VBox(10, imageView, nextButton);
-        root.setPadding(new Insets(10));
-        Scene scene = new Scene(root, 500, 500);
-        primaryStage.setTitle("Face Recognition");
+            if (path.isEmpty()) {
+                logger.error("No path mapped for faceId {}", faceId);
+                continue;
+            }
+
+            try {
+                javafx.scene.image.Image image = new javafx.scene.image.Image(getClass().getResourceAsStream(path));
+                if (image.isError()) {
+                    throw new RuntimeException("Failed to load image: " + path);
+                }
+                ImageView imageView = new ImageView(image);
+                imageView.setX(xOffset);
+                imageView.setY(0);
+                root.getChildren().add(imageView);
+
+                for (FaceDetail face : bounds) {
+                    double top = face.boundingBox().top() * image.getHeight();
+                    double left = face.boundingBox().left() * image.getWidth();
+                    double width = face.boundingBox().width() * image.getWidth();
+                    double height = face.boundingBox().height() * image.getHeight();
+
+                    Rectangle rectangle = new Rectangle(
+                            xOffset + left,
+                            top,
+                            width,
+                            height
+                    );
+                    rectangle.setStroke(Color.RED);
+                    rectangle.setFill(null);
+                    rectangle.setStrokeWidth(2);
+                    root.getChildren().add(rectangle);
+
+                    Text label = new Text(
+                            xOffset + left,
+                            top - 10,
+                            String.format("Confidence: %.2f%%", face.confidence())
+                    );
+                    label.setFill(Color.RED);
+                    root.getChildren().add(label);
+                }
+
+                xOffset += (int) (image.getWidth() + 10);
+            } catch (Exception e) {
+                logger.error("Failed to load image for faceId {} at path {}: {}", faceId, path, e.getMessage(), e);
+            }
+        }
+
+        Scene scene = new Scene(root, Math.max(xOffset, 800), 600);
+        primaryStage.setTitle("Face Recognition Results");
         primaryStage.setScene(scene);
         primaryStage.show();
-
-        if (!images.isEmpty()) {
-            loadNextImage();
-        } else {
-            logger.warn("No images provided to Visualizer");
-        }
-    }
-
-    private void loadNextImage() {
-        if (images.isEmpty()) {
-            logger.warn("No images to display");
-            return;
-        }
-        currentIndex = (currentIndex + 1) % images.size();
-        Image currentImage = images.get(currentIndex);
-        try {
-            imageView.setImage(new javafx.scene.image.Image(getClass().getResource(currentImage.getPath()).toString()));
-            // Draw bounding boxes
-            VBox root = (VBox) imageView.getParent();
-            root.getChildren().removeIf(node -> node instanceof Rectangle);
-            if (faceBounds != null && faceBounds.containsKey(currentImage.getFaceId())) {
-                for (BoundingBox box : faceBounds.get(currentImage.getFaceId())) {
-                    double x = box.getLeftCol() * imageView.getFitWidth();
-                    double y = box.getTopRow() * imageView.getFitHeight();
-                    double width = (box.getRightCol() - box.getLeftCol()) * imageView.getFitWidth();
-                    double height = (box.getBottomRow() - box.getTopRow()) * imageView.getFitHeight();
-                    Rectangle rect = new Rectangle(x, y, width, height);
-                    rect.setFill(null);
-                    rect.setStroke(Color.RED);
-                    rect.setStrokeWidth(2);
-                    root.getChildren().add(rect);
-                }
-            }
-            logger.info("Loaded image: {}", currentImage.getPath());
-        } catch (Exception e) {
-            logger.error("Failed to load image: {}", currentImage.getPath(), e);
-        }
     }
 }
