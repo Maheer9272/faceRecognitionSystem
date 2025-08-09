@@ -10,14 +10,14 @@ import java.util.List;
 public class ImageProcessor {
     private static final Logger logger = LoggerFactory.getLogger(ImageProcessor.class);
 
+    // Provide a small default image set for demo mode.
+    // Place files under src/main/resources/images/
     public List<Image> getImages() {
         List<Image> images = new ArrayList<>();
-        images.add(new Image("/images/image1.jpg", "fimage1.jpg"));
-        images.add(new Image("/images/image2.jpg", "fimage2.jpg"));
-        images.add(new Image("/images/image3.jpg", "fimage3.jpg"));
-        images.add(new Image("/images/image4.jpg", "fimage4.jpg"));
-        images.add(new Image("/images/image5.jpg", "fimage5.jpg"));
-        logger.info("Retrieved {} images", images.size());
+        images.add(new Image("/images/image1.jpg", "img-1"));
+        images.add(new Image("/images/image2.jpg", "img-2"));
+        images.add(new Image("/images/image3.jpg", "img-3"));
+        logger.info("Retrieved {} demo images", images.size());
         return images;
     }
 }

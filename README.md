@@ -1,25 +1,34 @@
-# Face Recognition System
+# Face Recognition System (Improved Demo)
 
-## Overview
+## What's new
+- Demo mode that works without AWS credentials.
+- JavaFX Maven build and launcher.
+- Clear UI even if images are missing.
+- Safer DB config (no hardcoded secrets in code).
 
-The **Face Recognition System** is a desktop application designed to identify faces and store them in a database for future recognition tasks. Its primary purpose is to facilitate secure, automated face identification for a variety of use cases, such as access control, attendance management, or personalized experiences.
+## Quick start (Demo mode)
+1. Ensure JDK 17+ is installed (`java -version`).
+2. Place 2–3 JPG images here:
+   - `src/main/resources/images/image1.jpg`
+   - `src/main/resources/images/image2.jpg`
+   - `src/main/resources/images/image3.jpg`
+3. Run:
+   - `mvn -q -DskipTests javafx:run -Ddemo=true`
 
-## Features
+You should see a window titled "Face Recognition Results (Demo)" with red rectangles on each image.
 
-- **Face Identification:** Detects and recognizes faces from images or live video streams.
-- **Database Integration:** Stores recognized facial data for future reference and matching.
-- **User Management:** Add, update, and manage individual face records in the system.
-- **Multiple Use Cases:** Easily adaptable to different scenarios including security, authentication, and attendance systems.
-- **Desktop Application:** Provides a user-friendly interface for local machine use.
+## Using AWS Rekognition (non-demo)
+- Set AWS credentials (environment, profile, or instance role).
+- Run:
+  - `mvn -q -DskipTests javafx:run -Ddemo=false`
+- The app will call Rekognition and draw actual detections.
 
-## Technologies Used
+## Common issues
+- Empty window or message "Missing: /images/imageX.jpg":
+  - Make sure the images exist under `src/main/resources/images/` and are added to your build.
+- JavaFX errors on startup:
+  - Use the provided Maven run command. It configures JavaFX modules automatically.
 
-- Technologies include:
-  - **Programming Language:** Java
-  - **Libraries:** Amazon SDK Rekognition(For face detection), SQLite/MySQL (for database)
-
-## Contact
-
-For issues or feature requests, please open an issue on the repository or contact the author:
-
-- GitHub: [Maheer9272](https://github.com/Maheer9272)
+## Notes
+- Database credentials should be provided via environment variables or properties; avoid hardcoding secrets.
+- This project runs as a desktop JavaFX application; it also logs console output for diagnostics.

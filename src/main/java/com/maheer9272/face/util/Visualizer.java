@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.services.rekognition.model.FaceDetail;
 
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +23,7 @@ public class Visualizer extends Application {
     private static Map<String, String> faceIdToPath = Collections.emptyMap();
 
     public Visualizer() {
-        // No-argument constructor for JavaFX
+        // JavaFX requires a no-arg constructor
     }
 
     public static void setFaceBounds(Map<String, List<FaceDetail>> bounds, Map<String, String> idToPath) {
@@ -35,6 +36,12 @@ public class Visualizer extends Application {
         Pane root = new Pane();
         int xOffset = 0;
 
+        if (faceBounds.isEmpty()) {
+            Text msg = new Text(20, 40, "No faces to display. Are demo images present under resources/images?");
+            msg.setFill(Color.DARKRED);
+            root.getChildren().add(msg);
+        }
+
         for (Map.Entry<String, List<FaceDetail>> entry : faceBounds.entrySet()) {
             String faceId = entry.getKey();
             List<FaceDetail> bounds = entry.getValue();
@@ -45,8 +52,17 @@ public class Visualizer extends Application {
                 continue;
             }
 
-            try {
-                javafx.scene.image.Image image = new javafx.scene.image.Image(getClass().getResourceAsStream(path));
+            try (InputStream is = Visualizer.class.getResourceAsStream(path)) {
+                if (is == null) {
+                    logger.error("Image not found on classpath: {}", path);
+                    Text missing = new Text(xOffset + 10, 40, "Missing: " + path);
+                    missing.setFill(Color.ORANGERED);
+                    root.getChildren().add(missing);
+                    xOffset += 300;
+                    continue;
+                }
+
+                javafx.scene.image.Image image = new javafx.scene.image.Image(is);
                 if (image.isError()) {
                     throw new RuntimeException("Failed to load image: " + path);
                 }
@@ -74,8 +90,8 @@ public class Visualizer extends Application {
 
                     Text label = new Text(
                             xOffset + left,
-                            top - 10,
-                            String.format("Confidence: %.2f%%", face.confidence())
+                            Math.max(0, top - 8),
+                            String.format("Conf: %.1f%%", face.confidence())
                     );
                     label.setFill(Color.RED);
                     root.getChildren().add(label);
@@ -87,8 +103,8 @@ public class Visualizer extends Application {
             }
         }
 
-        Scene scene = new Scene(root, Math.max(xOffset, 800), 600);
-        primaryStage.setTitle("Face Recognition Results");
+        Scene scene = new Scene(root, Math.max(xOffset, 900), 600);
+        primaryStage.setTitle("Face Recognition Results (Demo)");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
