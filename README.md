@@ -16,7 +16,7 @@ The **Face Recognition System** is a desktop application designed to identify fa
 
 - Technologies include:
   - **Programming Language:** Java
-  - **Libraries:** Amazon SDK Rekognition(For face detection), SQLite/MySQL (for database)
+  - **Libraries:** Amazon SDK Rekognition(For face detection), MySQL (for database)
 
 ## Contact
 
